@@ -153,8 +153,8 @@ class SimulatorGUI:
             self._side_view, ((0.27 * 460 * 536) / 466, 0.27 * 460)
         )
 
-    # Draw the menu screen
-    def draw_menu(
+    # Draw the setup screen
+    def draw_setup(
         self,
         triangle,
         circle_z,
@@ -165,7 +165,7 @@ class SimulatorGUI:
         target_y,
         target_z,
     ):
-        # Draw the menu UI components
+        # Draw the setup UI components
         button_rect = pygame.Rect(50, 790, 200, 50)
         text_start = self._font.render("Calculate", True, self._colors["BLACK"])
         text_start_rect = text_start.get_rect(center=button_rect.center)
@@ -400,7 +400,7 @@ class SimulatorGUI:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self._back_button_rect.collidepoint(event.pos):
-                return "menu"
+                return "setup"
             if self._start_stop_button_rect.collidepoint(event.pos):
                 self._animating = not self._animating
             if self._reset_button_rect.collidepoint(event.pos):
@@ -419,7 +419,7 @@ class ProjectileSimulator:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("Projectile Simulator")
-        self._state = "menu"  # Initial state of the simulator
+        self._state = "setup"  # Initial state of the simulator
 
         # Screen dimensions and setup
         self._width, self._height = 1600, 900
@@ -492,10 +492,10 @@ class ProjectileSimulator:
 
         self._clock = pygame.time.Clock()  # Clock for managing frame rate
 
-    # Run the menu loop
-    def run_menu(self):
-        menu_running = True
-        while menu_running and self._state == "menu":
+    # Run the setup loop
+    def run_setup(self):
+        setup_running = True
+        while setup_running and self._state == "setup":
             time_delta = self._clock.tick(60) / 1000.0
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -505,7 +505,7 @@ class ProjectileSimulator:
                     button_rect = pygame.Rect(50, 790, 200, 50)
                     if button_rect.collidepoint(event.pos):
                         self._state = "play"
-                        menu_running = False
+                        setup_running = False
 
                 if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
                     if event.ui_element == self._y_text_entry:
@@ -561,7 +561,7 @@ class ProjectileSimulator:
                 self._manager.process_events(event)
 
             self._manager.update(time_delta)
-            self._gui.draw_menu(
+            self._gui.draw_setup(
                 self._triangle,
                 self._circle_z,
                 self._circle_y,
@@ -597,11 +597,11 @@ class ProjectileSimulator:
                 self._manager.process_events(event)
             self._manager.update(self._clock.tick(60) / 1000.0)
 
-    # Main loop to switch between menu and simulation
+    # Main loop to switch between setup and simulation
     def run(self):
         while True:
-            if self._state == "menu":
-                self.run_menu()
+            if self._state == "setup":
+                self.run_setup()
             elif self._state == "play":
                 self.run_simulation()
 

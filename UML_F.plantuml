@@ -46,7 +46,7 @@ class SimulatorGUI {
     - _side_view: pygame.Surface
     --
     + __init__(self, screen, manager, width, height, colors, font)
-    + draw_menu(self, triangle, circle_z, circle_y, circle_radius, y_text_entry, z_text_entry, target_y, target_z)
+    + draw_setup(self, triangle, circle_z, circle_y, circle_radius, y_text_entry, z_text_entry, target_y, target_z)
     + draw_simulation(self, origin_x, origin_y, target_x, target_y, target_z, wall_x, wall_y, v0_optimized, x_trajectory, y_trajectory)
     + handle_events(self, event): str
     + reset(self)
@@ -82,7 +82,7 @@ class ProjectileSimulator {
     - _clock: pygame.time.Clock
     --
     + __init__(self)
-    + run_menu(self)
+    + run_setup(self)
     + run_simulation(self)
     + run(self)
 }
