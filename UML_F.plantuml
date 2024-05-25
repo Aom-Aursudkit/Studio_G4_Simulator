@@ -1,0 +1,94 @@
+@startuml
+
+class Triangle {
+    - _width: int
+    - _height: int
+    - _side_length: float
+    - _triangle_height: float
+    - _horizontal_margin: float
+    - _vertical_margin: float
+    - _vertex1: Tuple[int, int]
+    - _vertex2: Tuple[int, int]
+    - _vertex3: Tuple[int, int]
+    --
+    + __init__(self, width, height, side_length)
+    + sign(self, p1, p2, p3): float
+    + point_in_triangle(self, pz, py, v1, v2, v3): bool
+    + circle_in_triangle(self, cz, cy, rad, v1, v2, v3): bool
+}
+
+class Projectile {
+    - _g: float
+    - _h: float
+    - _target_x: float
+    - _wall_x: float
+    - _wall_y: float
+    --
+    + __init__(self, g, h, target_x, wall_x, wall_y)
+    + projectile_motion(self, v0, theta): Tuple[float, float]
+    + y_at_wall(self, v0, theta): float
+    + optimize_v0(self, theta, target_y): float
+    + trajectory(self, v0, theta, num_points=1000): Tuple[np.ndarray, np.ndarray]
+}
+
+class SimulatorGUI {
+    - _screen: pygame.Surface
+    - _manager: pygame_gui.UIManager
+    - _width: int
+    - _height: int
+    - _colors: Dict[str, Tuple[int, int, int]]
+    - _font: pygame.font.Font
+    - _animating: bool
+    - _point_index: int
+    - _back_button_rect: pygame.Rect
+    - _start_stop_button_rect: pygame.Rect
+    - _reset_button_rect: pygame.Rect
+    - _side_view: pygame.Surface
+    --
+    + __init__(self, screen, manager, width, height, colors, font)
+    + draw_menu(self, triangle, circle_z, circle_y, circle_radius, y_text_entry, z_text_entry, target_y, target_z)
+    + draw_simulation(self, origin_x, origin_y, target_x, target_y, target_z, wall_x, wall_y, v0_optimized, x_trajectory, y_trajectory)
+    + handle_events(self, event): str
+    + reset(self)
+}
+
+class ProjectileSimulator {
+    - _state: str
+    - _width: int
+    - _height: int
+    - _screen: pygame.Surface
+    - _colors: Dict[str, Tuple[int, int, int]]
+    - _font: pygame.font.Font
+    - _triangle: Triangle
+    - _circle_radius: int
+    - _circle_z: int
+    - _circle_y: int
+    - _g: float
+    - _h: float
+    - _target_x: float
+    - _wall_x: float
+    - _wall_y: float
+    - _theta: float
+    - _target_y: float
+    - _target_z: float
+    - _projectile: Projectile
+    - _v0_optimized: float
+    - _x_trajectory: np.ndarray
+    - _y_trajectory: np.ndarray
+    - _manager: pygame_gui.UIManager
+    - _y_text_entry: pygame_gui.elements.UITextEntryLine
+    - _z_text_entry: pygame_gui.elements.UITextEntryLine
+    - _gui: SimulatorGUI
+    - _clock: pygame.time.Clock
+    --
+    + __init__(self)
+    + run_menu(self)
+    + run_simulation(self)
+    + run(self)
+}
+
+ProjectileSimulator --> Triangle
+ProjectileSimulator --> Projectile
+ProjectileSimulator --> SimulatorGUI
+SimulatorGUI --> Triangle
+@enduml
