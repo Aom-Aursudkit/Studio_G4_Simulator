@@ -20,11 +20,13 @@ class ProjectileSimulator:
         self._BLACK = (0, 0, 0)
         self._WHITE = (217, 217, 217)
         self._RED = (209, 106, 106)
-        self._GREEN = (0, 255, 102)
-        self._DARKER_GREEN = (0, 200, 0)
-        self._LIGHT_BLUE = (172, 230, 255)
-        self._BLUE = (122, 180, 205)
-        self._background_color = (30, 30, 30)  # Dark gray
+        self._DARKER_RED = (159, 56, 56)
+        self._GREEN = (178,251,165)
+        self._DARKER_GREEN = (128, 201, 115)
+        self._BLUE = (172, 230, 255)
+        self._DARKER_BLUE = (122, 180, 205)
+        self._GREY = (30, 30, 30)
+        self._LIGHT_GREY = (50, 50, 50)
         
         self._font = pygame.font.Font(None, 36)
         
@@ -46,7 +48,7 @@ class ProjectileSimulator:
         # Animating
         self._point_index = 0
         self._animating = False
-        self._time_elapsed = 0
+        # self._time_elapsed = 0
         
         # Image
         self._side_view = pygame.image.load("data/images/side_view_2024-05-21_151130-removebg-preview.png")
@@ -58,12 +60,12 @@ class ProjectileSimulator:
         # GUI Elements ###################################################
         # Text box for y-coordinate
         self._y_text_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect((730, 700), (150, 50)), manager=self._manager)
+            relative_rect=pygame.Rect((730, 700), (140, 50)), manager=self._manager)
         self._y_text_entry.set_text(str(70))
         
         # Text box for z-coordinate
         self._z_text_entry = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect((730, 750), (150, 50)), manager=self._manager)
+            relative_rect=pygame.Rect((730, 750), (140, 50)), manager=self._manager)
         self._z_text_entry.set_text(str(250))
         ##################################################################
         
@@ -151,17 +153,17 @@ class ProjectileSimulator:
         y = self._h + v0 * np.sin(theta_rad) * t - 0.5 * self._g * t**2
         return x, y
     
-    def trajec_animating(self, v0, theta, num_points=1000):
-        theta_rad = np.radians(theta)
-        t_max = 2 * v0 * np.sin(theta_rad) / self._g
-        t_intervals = [t_max * i / num_points for i in range(num_points + 1)]
-        t = np.linspace(0, t_max, num_points)
-        x = v0 * np.cos(theta_rad) * t
-        y = self._h + v0 * np.sin(theta_rad) * t - 0.5 * self._g * t**2
-        return x, y, t_intervals
+    # def trajec_animating(self, v0, theta, num_points=1000):
+    #     theta_rad = np.radians(theta)
+    #     t_max = 2 * v0 * np.sin(theta_rad) / self._g
+    #     t_intervals = [t_max * i / num_points for i in range(num_points + 1)]
+    #     t = np.linspace(0, t_max, num_points)
+    #     x = v0 * np.cos(theta_rad) * t
+    #     y = self._h + v0 * np.sin(theta_rad) * t - 0.5 * self._g * t**2
+    #     return x, y, t_intervals
     
     def menu(self):
-        button_rect = pygame.Rect(50, 50, 200, 50)
+        button_rect = pygame.Rect(50, 790, 200, 50)
         text_start = self._font.render("Calculate", True, self._BLACK)
         text_start_rect = text_start.get_rect(center=button_rect.center)
         self._animating = False
@@ -204,67 +206,72 @@ class ProjectileSimulator:
             
             self._manager.update(time_delta)
             
-            # Fill the screen with a nicer background color
-            self._screen.fill(self._background_color)
+            # Fill the screen
+            self._screen.fill(self._GREY)
             
-            # Draw the triangle with a nicer color
+            # Draw the triangle
             pygame.draw.polygon(self._screen, self._WHITE, [self._vertex1, self._vertex2, self._vertex3])
             
             # Draw the circle
-            pygame.draw.circle(self._screen, self._background_color, (self._circle_z, self._circle_y), self._circle_radius)
+            pygame.draw.circle(self._screen, self._GREY, (self._circle_z, self._circle_y), self._circle_radius)
             
+            pygame.draw.rect(self._screen, self._LIGHT_GREY, pygame.Rect(570, 690, 460, 120), 0, 10)
             self._manager.draw_ui(self._screen)
             
             mouse_pos = pygame.mouse.get_pos()
-            current_color = self._BLUE if button_rect.collidepoint(mouse_pos) else self._LIGHT_BLUE
-            pygame.draw.rect(self._screen, current_color, button_rect)
+            calculate_color = self._DARKER_BLUE if button_rect.collidepoint(mouse_pos) else self._BLUE
+            pygame.draw.rect(self._screen, calculate_color, button_rect, 0, 10)
             self._screen.blit(text_start, text_start_rect)
             
             text = self._font.render("Target Y", True, self._WHITE)
             self._screen.blit(text, (620, 715))
             text = self._font.render("mm", True, self._WHITE)
-            self._screen.blit(text, (890, 715))
+            self._screen.blit(text, (880, 715))
             text = self._font.render("Target Z", True, self._WHITE)
             self._screen.blit(text, (620, 765))
             text = self._font.render("mm", True, self._WHITE)
-            self._screen.blit(text, (890, 765))
+            self._screen.blit(text, (880, 765))
             
             # Update the display
             pygame.display.flip()
     
     def draw(self):
-        self._screen.fill(self._background_color)
+        self._screen.fill(self._GREY)
+        
+        # Background
+        pygame.draw.rect(self._screen, self._LIGHT_GREY, pygame.Rect(290, 715, 970, 150), 0, 10) # text
+        pygame.draw.rect(self._screen, self._LIGHT_GREY, pygame.Rect(1280, 715, 240, 150), 0, 10) # Button
         
         # Button
-        self._back_button_rect = pygame.Rect(50, 50, 200, 50)
+        self._back_button_rect = pygame.Rect(50, 790, 200, 50)
         back_text = self._font.render("Go back", True, self._BLACK)
         back_text_rect = back_text.get_rect(center=self._back_button_rect.center)
         
-        self._start_stop_button_rect = pygame.Rect(50, 110, 200, 50)
+        self._start_stop_button_rect = pygame.Rect(1300, 735, 200, 50)
         start_stop_text = self._font.render("Start/Stop", True, self._BLACK)
         start_stop_text_rect = start_stop_text.get_rect(center=self._start_stop_button_rect.center)
         
-        self._reset_button_rect = pygame.Rect(260, 110, 200, 50)
+        self._reset_button_rect = pygame.Rect(1300, 795, 200, 50)
         reset_text = self._font.render("Reset", True, self._BLACK)
         reset_text_rect = reset_text.get_rect(center=self._reset_button_rect.center)
         
         mouse_pos = pygame.mouse.get_pos()
-        back_color = self._BLUE if self._back_button_rect.collidepoint(mouse_pos) else self._LIGHT_BLUE
-        pygame.draw.rect(self._screen, back_color, self._back_button_rect)
+        back_color = self._DARKER_BLUE if self._back_button_rect.collidepoint(mouse_pos) else self._BLUE
+        pygame.draw.rect(self._screen, back_color, self._back_button_rect, 0, 10)
         self._screen.blit(back_text, back_text_rect)
         
-        start_stop_color = self._BLUE if self._start_stop_button_rect.collidepoint(mouse_pos) else self._LIGHT_BLUE
-        pygame.draw.rect(self._screen, start_stop_color, self._start_stop_button_rect)
+        start_stop_color = self._DARKER_GREEN if self._start_stop_button_rect.collidepoint(mouse_pos) else self._GREEN
+        pygame.draw.rect(self._screen, start_stop_color, self._start_stop_button_rect, 0, 10)
         self._screen.blit(start_stop_text, start_stop_text_rect)
         
-        reset_color = self._BLUE if self._reset_button_rect.collidepoint(mouse_pos) else self._LIGHT_BLUE
-        pygame.draw.rect(self._screen, reset_color, self._reset_button_rect)
+        reset_color = self._DARKER_RED if self._reset_button_rect.collidepoint(mouse_pos) else self._RED
+        pygame.draw.rect(self._screen, reset_color, self._reset_button_rect, 0, 10)
         self._screen.blit(reset_text, reset_text_rect)
         
         # Vert coordinates to pixels
         scale = 460  # pixels per meter
         origin_x = 300
-        origin_y = self._height - 70
+        origin_y = self._height - 230
         
         # Draw target
         target_pos = (origin_x + scale * self._target_x, origin_y - scale * self._target_y)
@@ -289,9 +296,9 @@ class ProjectileSimulator:
         
         # Display output
         text = self._font.render(f"Optimized v0: {self._v0_optimized:.4f} m/s", True, self._WHITE)
-        self._screen.blit(text, (300, 50))
+        self._screen.blit(text, (320, 800))
         text_pos_z = self._font.render(f"Z position from the left side: {self._target_z} cm", True, self._WHITE)
-        self._screen.blit(text_pos_z, (750, 50))
+        self._screen.blit(text_pos_z, (320, 750))
         
         # Draw trajectory
         x_traj, y_traj = self.trajectory(self._v0_optimized, self._theta, num_points=100)
@@ -300,18 +307,32 @@ class ProjectileSimulator:
             pygame.draw.lines(self._screen, self._WHITE, False, points, 2)
         
         # Animating trajectory
-        x_traj, y_traj, t_intervals = self.trajec_animating(self._v0_optimized, self._theta, num_points=100)
-        points = [(origin_x + scale * x, origin_y - scale * y) for x, y in zip(x_traj, y_traj) if y >= 0]
-        if self._animating and self._point_index < len(points):
-            self._time_elapsed += self._clock.get_time() / 1000  # Time in seconds
-            while self._point_index < len(points) - 1 and self._time_elapsed >= t_intervals[self._point_index]:
-                self._point_index += 1
+        if self._animating:
             if self._point_index < len(points):
                 ball_pos = points[self._point_index]
                 pygame.draw.circle(self._screen, self._RED, ball_pos, 0.02 * scale)
+                self._point_index += 1
+            else:
+                self._point_index = 0
         elif not self._animating and self._point_index > 0:
             ball_pos = points[self._point_index]
             pygame.draw.circle(self._screen, self._RED, ball_pos, 0.02 * scale)
+        if self._point_index >= len(points):
+                self._point_index = 0
+        ##############################################################################################################
+        # x_traj, y_traj, t_intervals = self.trajec_animating(self._v0_optimized, self._theta, num_points=100)
+        # points = [(origin_x + scale * x, origin_y - scale * y) for x, y in zip(x_traj, y_traj) if y >= 0]
+        # if self._animating and self._point_index < len(points):
+        #     self._time_elapsed += self._clock.get_time() / 1000  # Time in seconds
+        #     while self._point_index < len(points) - 1 and self._time_elapsed >= t_intervals[self._point_index]:
+        #         self._point_index += 1
+        #     if self._point_index < len(points):
+        #         ball_pos = points[self._point_index]
+        #         pygame.draw.circle(self._screen, self._RED, ball_pos, 0.02 * scale)
+        # elif not self._animating and self._point_index > 0:
+        #     ball_pos = points[self._point_index]
+        #     pygame.draw.circle(self._screen, self._RED, ball_pos, 0.02 * scale)
+        ##############################################################################################################
         
         pygame.display.flip()
     
@@ -330,7 +351,8 @@ class ProjectileSimulator:
                 if self._reset_button_rect.collidepoint(event.pos):
                     self._animating = False
                     self._point_index = 0
-                    self._time_elapsed = 0
+                    # self._time_elapsed = 0
+            print(self._point_index)
             self._v0_optimized = self.optimize_v0(self._theta)  # Update the velocity each time the input changes
             self._manager.process_events(event)
         self._manager.update(time_delta)
