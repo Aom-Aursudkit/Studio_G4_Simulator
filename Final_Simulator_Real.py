@@ -427,6 +427,8 @@ class SimulatorGUI:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self._back_button_rect.collidepoint(event.pos):
+                self._animating = False
+                self._point_index = 0
                 return "setup"
             if self._start_stop_button_rect.collidepoint(event.pos):
                 self._animating = not self._animating
