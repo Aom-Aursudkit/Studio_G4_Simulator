@@ -379,7 +379,7 @@ class SimulatorGUI:
         )
         self._screen.blit(text_optimized_v0, (320, 800))
         text_pos_z = self._font.render(
-            f"Z position from the left side: {(target_z / 10) - 10} cm", True, self._colors["BLACK"]
+            f"Z position from the left side: {target_z - 10} cm", True, self._colors["BLACK"]
         )
         self._screen.blit(text_pos_z, (320, 750))
         text_optimized_voltage = self._font.render(
@@ -487,7 +487,7 @@ class ProjectileSimulator:
         self._theta = 45  # Launch angle
 
         self._target_y = 0.755 + 0.07  # Target y position
-        self._target_z = 250  # Target z position in cm
+        self._target_z = 25  # Target z position in cm
 
         self._projectile = Projectile(
             self._g, self._h, self._target_x, self._wall_x, self._wall_y
@@ -529,14 +529,14 @@ class ProjectileSimulator:
         setup_running = True
         
         # debug
-        # self._target_y = 0.755 + 0.07  # Target y position
-        # temp_y = 70
-        # test_y = (self._height - self._triangle._vertical_margin - temp_y)
-        # self._circle_y = test_y
-        # self._target_z = 250  # Target z position in cm
-        # temp_z = 250
-        # test_z = int(self._triangle._horizontal_margin) + temp_z
-        # self._circle_z = test_z
+        self._target_y = 0.755 + 0.07  # Target y position
+        temp_y = 70
+        test_y = (self._height - self._triangle._vertical_margin - temp_y)
+        self._circle_y = test_y
+        self._target_z = 25  # Target z position in cm
+        temp_z = 250
+        test_z = int(self._triangle._horizontal_margin) + temp_z
+        self._circle_z = test_z
         
         while setup_running and self._state == "setup":
             time_delta = self._clock.tick(60) / 1000.0
