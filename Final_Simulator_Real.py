@@ -169,6 +169,7 @@ class SimulatorGUI:
         z_text_entry,
         target_y,
         target_z,
+        errorr,
     ):
         # Draw the setup UI components
         button_rect = pygame.Rect(50, 790, 200, 50)
@@ -221,6 +222,13 @@ class SimulatorGUI:
         self._screen.blit(text, (620, 765))
         text = self._font.render("mm", True, self._colors["WHITE"])
         self._screen.blit(text, (880, 765))
+        
+        # Error
+        if errorr == True:
+            text = self._font.render("ERROR!", True, self._colors["RED"])
+            self._screen.blit(text, (1050, 715))
+            text = self._font.render("Target out of triangle", True, self._colors["RED"])
+            self._screen.blit(text, (1050, 765))
 
         # Update the display
         pygame.display.flip()
@@ -500,6 +508,8 @@ class ProjectileSimulator:
             self._colors,
             self._font,
         )
+        
+        self._errorr = False
 
         self._clock = pygame.time.Clock()  # Clock for managing frame rate
 
@@ -535,6 +545,9 @@ class ProjectileSimulator:
                                 self._triangle._vertex3,
                             ):
                                 self._circle_y = test_y
+                                self._errorr = False
+                            else:
+                                self._errorr = True
                         except ValueError:
                             self._y_text_entry.set_text(
                                 str(
@@ -559,6 +572,9 @@ class ProjectileSimulator:
                                 self._triangle._vertex3,
                             ):
                                 self._circle_z = test_z
+                                self._errorr = False
+                            else:
+                                self._errorr = True
                         except ValueError:
                             self._z_text_entry.set_text(
                                 str(
@@ -581,6 +597,7 @@ class ProjectileSimulator:
                 self._z_text_entry,
                 self._target_y,
                 self._target_z,
+                self._errorr,
             )
 
     # Run the simulation loop
