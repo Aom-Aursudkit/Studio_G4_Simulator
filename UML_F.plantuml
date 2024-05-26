@@ -48,7 +48,7 @@ class SimulatorGUI {
     --
     + __init__(self, screen, manager, width, height, colors, font)
     + draw_setup(self, triangle, circle_z, circle_y, circle_radius, y_text_entry, z_text_entry, target_y, target_z, errorr)
-    + draw_simulation(self, origin_x, origin_y, target_x, target_y, target_z, wall_x, wall_y, v0_optimized, voltage_optimized, x_trajectory, y_trajectory)
+    + draw_simulation(self, origin_x, origin_y, target_x, target_y, target_z, wall_x, wall_y, v0_optimized, voltage_optimized, x_trajectory, y_trajectory, triangle_h)
     + handle_events(self, event): str
     + reset(self)
 }
@@ -64,6 +64,7 @@ class ProjectileSimulator {
     - _circle_radius: int
     - _circle_z: int
     - _circle_y: int
+    - _triangle_h: float
     - _g: float
     - _h: float
     - _target_x: float

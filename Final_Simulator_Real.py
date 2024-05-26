@@ -540,7 +540,7 @@ class ProjectileSimulator:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self._errorr == False:
                     button_rect = pygame.Rect(50, 790, 200, 50)
                     if button_rect.collidepoint(event.pos):
                         self._state = "play"
