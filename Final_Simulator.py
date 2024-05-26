@@ -352,7 +352,7 @@ class ProjectileSimulator:
                     self._animating = False
                     self._point_index = 0
                     # self._time_elapsed = 0
-            print(self._point_index)
+            print(self._triangle_height)
             self._v0_optimized = self.optimize_v0(self._theta)  # Update the velocity each time the input changes
             self._manager.process_events(event)
         self._manager.update(time_delta)

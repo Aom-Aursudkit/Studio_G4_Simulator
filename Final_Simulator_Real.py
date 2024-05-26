@@ -129,7 +129,7 @@ class Projectile:
     
     # Find voltage require for v0
     def voltage_require(self, v0):
-        voltage_optimized = v0
+        voltage_optimized = v0 - 2
         return voltage_optimized
 
 
@@ -194,7 +194,7 @@ class SimulatorGUI:
         # Draw a rectangle for the text entry area
         pygame.draw.rect(
             self._screen,
-            self._colors["LIGHT_GREY"],
+            self._colors["LIGHT_CREAM"],
             pygame.Rect(570, 690, 460, 120),
             0,
             10,
@@ -214,13 +214,13 @@ class SimulatorGUI:
         self._screen.blit(text_start, text_start_rect)
 
         # Draw the labels for target y and z text entries
-        text = self._font.render("Target Y", True, self._colors["WHITE"])
+        text = self._font.render("Target Y", True, self._colors["BLACK"])
         self._screen.blit(text, (620, 715))
-        text = self._font.render("mm", True, self._colors["WHITE"])
+        text = self._font.render("mm", True, self._colors["BLACK"])
         self._screen.blit(text, (880, 715))
-        text = self._font.render("Target Z", True, self._colors["WHITE"])
+        text = self._font.render("Target Z", True, self._colors["BLACK"])
         self._screen.blit(text, (620, 765))
-        text = self._font.render("mm", True, self._colors["WHITE"])
+        text = self._font.render("mm", True, self._colors["BLACK"])
         self._screen.blit(text, (880, 765))
         
         # Error
@@ -247,16 +247,19 @@ class SimulatorGUI:
         voltage_optimized,
         x_trajectory,
         y_trajectory,
+        triangle_h,
     ):
         # Draw the simulation UI components
         self._screen.fill(self._colors["GREY"])
+        # Text area background
         pygame.draw.rect(
             self._screen,
-            self._colors["LIGHT_GREY"],
+            self._colors["LIGHT_CREAM"],
             pygame.Rect(290, 715, 970, 150),
             0,
             10,
         )
+        # Button area background
         pygame.draw.rect(
             self._screen,
             self._colors["LIGHT_GREY"],
@@ -304,18 +307,19 @@ class SimulatorGUI:
         # Draw target position
         scale = 460  # Scale for converting meters to pixels
         target_pos = (origin_x + scale * target_x, origin_y - scale * target_y)
+        # print(target_y)
         pygame.draw.line(
             self._screen,
             self._colors["WHITE"],
             (target_pos[0], origin_y),
-            (target_pos[0], origin_y - scale * 0.755),
+            (target_pos[0], origin_y - (scale * 0.755)),
             10,
         )
         pygame.draw.line(
             self._screen,
             self._colors["BLUE"],
             (target_pos[0], origin_y - (scale * 0.755)),
-            (target_pos[0], origin_y - (scale * 0.755) - (scale * 0.03)),
+            (target_pos[0], origin_y - (scale * 0.755) - (scale * (triangle_h / 1000))),
             10,
         )
         pygame.draw.line(
@@ -370,15 +374,15 @@ class SimulatorGUI:
 
         # Display the optimized initial velocity and target z position and voltage requirement
         text_optimized_v0 = self._font.render(
-            f"Optimized v0: {v0_optimized:.4f} m/s", True, self._colors["WHITE"]
+            f"Optimized v0: {v0_optimized:.4f} m/s", True, self._colors["BLACK"]
         )
         self._screen.blit(text_optimized_v0, (320, 800))
         text_pos_z = self._font.render(
-            f"Z position from the left side: {target_z} cm", True, self._colors["WHITE"]
+            f"Z position from the left side: {target_z} cm", True, self._colors["BLACK"]
         )
         self._screen.blit(text_pos_z, (320, 750))
         text_optimized_voltage = self._font.render(
-            f"Optimized voltage: {voltage_optimized:.2f} V", True, self._colors["WHITE"]
+            f"Optimized voltage: {voltage_optimized:.2f} V", True, self._colors["BLACK"]
         )
         self._screen.blit(text_optimized_voltage, (800, 800))
 
@@ -455,6 +459,7 @@ class ProjectileSimulator:
             "DARKER_BLUE": (122, 180, 205),
             "GREY": (30, 30, 30),
             "LIGHT_GREY": (50, 50, 50),
+            "LIGHT_CREAM": (229,227,217),
         }
 
         self._font = pygame.font.Font(None, 36)  # Font for text rendering
@@ -466,6 +471,7 @@ class ProjectileSimulator:
         self._circle_y = self._height - (
             self._triangle._vertex1[1] + self._circle_radius
         )
+        self._triangle_h = self._triangle._triangle_height
 
         # Projectile physics parameters
         self._g = 9.81  # Gravity
@@ -475,7 +481,7 @@ class ProjectileSimulator:
         self._wall_y = 0.60  # Wall height
         self._theta = 45  # Launch angle
 
-        self._target_y = 0.755 + 0.007  # Target y position
+        self._target_y = 0.755 + 0.07  # Target y position
         self._target_z = 250  # Target z position in cm
 
         self._projectile = Projectile(
@@ -516,9 +522,21 @@ class ProjectileSimulator:
     # Run the setup loop
     def run_setup(self):
         setup_running = True
+        
+        # debug
+        self._target_y = 0.755 + 0.07  # Target y position
+        temp_y = 70
+        test_y = (self._height - self._triangle._vertical_margin - temp_y)
+        self._circle_y = test_y
+        self._target_z = 250  # Target z position in cm
+        temp_z = 250
+        test_z = int(self._triangle._horizontal_margin) + temp_z
+        self._circle_z = test_z
+        
         while setup_running and self._state == "setup":
             time_delta = self._clock.tick(60) / 1000.0
             for event in pygame.event.get():
+                # print(self._target_y)
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -615,6 +633,7 @@ class ProjectileSimulator:
                 self._voltage_optimized,
                 self._x_trajectory,
                 self._y_trajectory,
+                self._triangle_h,
             )
             for event in pygame.event.get():
                 new_state = self._gui.handle_events(event)
@@ -625,6 +644,9 @@ class ProjectileSimulator:
                 )
                 self._voltage_optimized = self._projectile.voltage_require(
                     self._v0_optimized
+                )
+                self._x_trajectory, self._y_trajectory = self._projectile.trajectory(
+                    self._v0_optimized, self._theta
                 )
                 self._manager.process_events(event)
             self._manager.update(self._clock.tick(60) / 1000.0)
