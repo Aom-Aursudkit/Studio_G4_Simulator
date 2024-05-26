@@ -129,8 +129,9 @@ class Projectile:
     
     # Find voltage require for v0
     def voltage_require(self, v0):
-        voltage_optimized = v0 - 2
-        return voltage_optimized
+        voltage_optimized = (v0 - 3.6887) / 0.0518
+        v_adjust = voltage_optimized * 3 / 28
+        return voltage_optimized, v_adjust
 
 
 # Class to manage the GUI elements and drawing
@@ -378,11 +379,15 @@ class SimulatorGUI:
         )
         self._screen.blit(text_optimized_v0, (320, 800))
         text_pos_z = self._font.render(
-            f"Z position from the left side: {target_z} cm", True, self._colors["BLACK"]
+            f"Z position from the left side: {(target_z / 10) - 10} cm", True, self._colors["BLACK"]
         )
         self._screen.blit(text_pos_z, (320, 750))
         text_optimized_voltage = self._font.render(
-            f"Optimized voltage: {voltage_optimized:.2f} V", True, self._colors["BLACK"]
+            f"Voltage configurement: {voltage_optimized[1]:.2f} V", True, self._colors["BLACK"]
+        )
+        self._screen.blit(text_optimized_voltage, (800, 750))
+        text_optimized_voltage = self._font.render(
+            f"Optimized voltage: {voltage_optimized[0]:.2f} V", True, self._colors["BLACK"]
         )
         self._screen.blit(text_optimized_voltage, (800, 800))
 
@@ -475,7 +480,7 @@ class ProjectileSimulator:
 
         # Projectile physics parameters
         self._g = 9.81  # Gravity
-        self._h = 0.3  # Initial height of the projectile
+        self._h = 0.32936  # Initial height of the projectile
         self._target_x = 2.00  # Target x position
         self._wall_x = 1.00  # Wall x position
         self._wall_y = 0.60  # Wall height
@@ -524,14 +529,14 @@ class ProjectileSimulator:
         setup_running = True
         
         # debug
-        self._target_y = 0.755 + 0.07  # Target y position
-        temp_y = 70
-        test_y = (self._height - self._triangle._vertical_margin - temp_y)
-        self._circle_y = test_y
-        self._target_z = 250  # Target z position in cm
-        temp_z = 250
-        test_z = int(self._triangle._horizontal_margin) + temp_z
-        self._circle_z = test_z
+        # self._target_y = 0.755 + 0.07  # Target y position
+        # temp_y = 70
+        # test_y = (self._height - self._triangle._vertical_margin - temp_y)
+        # self._circle_y = test_y
+        # self._target_z = 250  # Target z position in cm
+        # temp_z = 250
+        # test_z = int(self._triangle._horizontal_margin) + temp_z
+        # self._circle_z = test_z
         
         while setup_running and self._state == "setup":
             time_delta = self._clock.tick(60) / 1000.0

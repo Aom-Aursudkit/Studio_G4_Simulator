@@ -29,7 +29,7 @@ class Projectile {
     + y_at_wall(self, v0, theta): float
     + optimize_v0(self, theta, target_y): float
     + trajectory(self, v0, theta, num_points=1000): Tuple[np.ndarray, np.ndarray]
-    + voltage_require(self, v0): float
+    + voltage_require(self, v0): Tuple[float, float]
 }
 
 class SimulatorGUI {
@@ -75,7 +75,7 @@ class ProjectileSimulator {
     - _target_z: float
     - _projectile: Projectile
     - _v0_optimized: float
-    - _voltage_optimized: float
+    - _voltage_optimized: Tuple[float, float]
     - _x_trajectory: np.ndarray
     - _y_trajectory: np.ndarray
     - _manager: pygame_gui.UIManager
