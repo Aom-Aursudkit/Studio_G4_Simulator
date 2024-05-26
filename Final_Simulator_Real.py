@@ -126,6 +126,11 @@ class Projectile:
         x = v0 * np.cos(theta_rad) * t
         y = self._h + v0 * np.sin(theta_rad) * t - 0.5 * self._g * t**2
         return x, y
+    
+    # Find voltage require for v0
+    def voltage_require(self, v0):
+        voltage_optimized = v0
+        return voltage_optimized
 
 
 # Class to manage the GUI elements and drawing
@@ -231,6 +236,7 @@ class SimulatorGUI:
         wall_x,
         wall_y,
         v0_optimized,
+        voltage_optimized,
         x_trajectory,
         y_trajectory,
     ):
@@ -354,15 +360,19 @@ class SimulatorGUI:
             (origin_x - (0.27 * scale * 536) / 466, origin_y - 0.27 * scale),
         )
 
-        # Display the optimized initial velocity and target z position
-        text = self._font.render(
+        # Display the optimized initial velocity and target z position and voltage requirement
+        text_optimized_v0 = self._font.render(
             f"Optimized v0: {v0_optimized:.4f} m/s", True, self._colors["WHITE"]
         )
-        self._screen.blit(text, (320, 800))
+        self._screen.blit(text_optimized_v0, (320, 800))
         text_pos_z = self._font.render(
             f"Z position from the left side: {target_z} cm", True, self._colors["WHITE"]
         )
         self._screen.blit(text_pos_z, (320, 750))
+        text_optimized_voltage = self._font.render(
+            f"Optimized voltage: {voltage_optimized:.2f} V", True, self._colors["WHITE"]
+        )
+        self._screen.blit(text_optimized_voltage, (800, 800))
 
         # Draw the trajectory of the projectile
         points = [
@@ -464,6 +474,7 @@ class ProjectileSimulator:
             self._g, self._h, self._target_x, self._wall_x, self._wall_y
         )
         self._v0_optimized = self._projectile.optimize_v0(self._theta, self._target_y)
+        self._voltage_optimized = self._projectile.voltage_require(self._v0_optimized)
 
         # Calculate the trajectory of the projectile
         self._x_trajectory, self._y_trajectory = self._projectile.trajectory(
@@ -584,6 +595,7 @@ class ProjectileSimulator:
                 self._wall_x,
                 self._wall_y,
                 self._v0_optimized,
+                self._voltage_optimized,
                 self._x_trajectory,
                 self._y_trajectory,
             )
@@ -593,6 +605,9 @@ class ProjectileSimulator:
                     self._state = new_state
                 self._v0_optimized = self._projectile.optimize_v0(
                     self._theta, self._target_y
+                )
+                self._voltage_optimized = self._projectile.voltage_require(
+                    self._v0_optimized
                 )
                 self._manager.process_events(event)
             self._manager.update(self._clock.tick(60) / 1000.0)
